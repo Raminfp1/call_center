@@ -161,14 +161,35 @@ class TreeData:
         return
     
 ########################################
+    def read_first_column(self):
+        values = []
+        for row in self.tree.get_children():
+            self.tree.item(row,open=True)
+
+            values.append(self.tree.item(row)['text'])
+
+        print("******************",values)
+        return
+        
+    
     def disp_data(self,el):
         print(el)
         par=self.tree.insert("", "end", text=" >",values=(el[0][1],el[0][2],el[0][3],el[0][4]))
-        print(par)
-        self.tree.insert("I001", "end", text="0")
-        self.tree.insert("I001", "end", text="1")
-        self.tree.insert("I003", "end", text="2")
-
+        #print(par)
+        #self.tree.insert("I001", "end", text="0")
+        #self.tree.insert("I001", "end", text="1")
+        #self.tree.insert("I003", "end", text="2")
+        
+        for e in el:
+            if(len(e[0])==1): #level1
+                self.tree.insert("I001", "end", text=e[0])
+        
+        for e in el:
+            if(len(e[0])==2): #level1
+                self.tree.insert("I002", "end", text=e[0])
+        self.read_first_column()
+        
+        
         #for i in range(1,len(el)):
         #    par=self.tree.insert("", "end", text=" >",values=(el[0][1],el[0][2],el[0][3],el[0][4]))
             
