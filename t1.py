@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.ttk import *
-from tkinter import scrolledtext
+
 ########################################
 print(__name__)
 ########################################
@@ -17,8 +16,8 @@ def main():
     
 
     print(el)
-    #ins_el(el)
-    delete_item_from_nested_dict("024", el)
+    print(el[">"]["0"]["00"])
+    el[">"]["0"].pop("00")
     print(el)
     
     
@@ -30,38 +29,20 @@ def main():
     return
 
 
-def delete_item_from_nested_dict(item, nested_dict):
-    print("------------------------------------------------------------------------------------")
-    keys = item.split(".")  # Split the item into keys
-    print("keys=",keys)
-    current_dict = nested_dict
-    for key in keys[:-1]:  # Traverse the dictionary to reach the parent of the item
-        print("current_dict =",current_dict,"--",current_dict.get(key, {}))
-        current_dict = current_dict.get(key, {})
-
-    print(current_dict,keys,keys[-1])    
-    current_dict.pop(keys[-1], None)  # Remove the item from the dictionary
-    print("------------------------------------------------------------------------------------")
-
-
-
 
 
 #########################################
 class TreeData:
     def __init__(self,root):
-        self.tree_frame = Frame(root)
+        self.tree_frame = tk.Frame(root)
         self.tree_frame.pack()
 
 
         # Create a Treeview widget
         self.tree = ttk.Treeview(self.tree_frame, columns=("#1", "#2","#3","#4"), height=30)
 
-        s=ttk.Style()
-        #s.theme_use('clam')
-
-        # Add the rowheight
-        s.configure('Treeview', rowheight=30)
+        #s=ttk.Style()
+        #s.configure('Treeview', rowheight=30)
 
 
         # Define columns
@@ -78,17 +59,14 @@ class TreeData:
         self.tree.column("#3", minwidth=80, width=80, stretch=tk.NO,anchor=tk.CENTER)
         self.tree.column("#4", minwidth=80, width=80, stretch=tk.NO,anchor=tk.CENTER)
 
-
-        # Add data to the tree
-        #p1=self.tree.insert("", "end", text=" >", values=("", "","",""))
-         
-
-        #print("p1=",p1)
-
+    
         # Pack the tree
         self.tree.pack()
-        #self.tree.bind('<ButtonRelease-1>', self.selectItem)
         self.tree_frame.place(x=100, y=90)
+
+        self.tree.bind('<ButtonRelease-3> ', self.selectItem)
+
+
         return
     ########################################
 
@@ -97,9 +75,61 @@ class TreeData:
             category_node = self.tree.insert(parent, "end", text=key)
             self.disp_data(value, category_node)
      
-        
-        
         print(data)
+
+########################################
+
+    def selectItem(self,event):
+        curItem = self.tree.item(self.tree.focus())
+        col = self.tree.identify_column(event.x)
+        row = self.tree.selection()[0]
+        
+        print ('curItem = ', curItem)
+        
+        if col == '#0':
+            cell_value = curItem['text']
+        elif col == '#1':
+            cell_value = curItem['values'][0]
+        elif col == '#2':
+            cell_value = curItem['values'][1]
+        elif col == '#3':
+            cell_value = curItem['values'][2]
+        elif col == '#4':
+            cell_value = curItem['values'][3]
+        
+        print ('cell_value = ', cell_value)
+        print('row =',row,col)
+        self.show_menu()
+        # Change the value of a specific cell
+        #self.tree.set ("I003", "#3", "Ramin")
+        #self.tree.set("I002", 0, "EHSAN")
+        #print(curItem)       
+        return 
+    ########################################
+    def on_right_click(self,event):
+        print("alyk")
+        item = self.tree.identify_row(event.y)
+        if item:
+            self.menu.post(event.x_root, event.y_root)
+
+    def on_submenu_click(self):
+        print("Submenu item clicked")
+
+
+
+    def show_menu(self):
+        print("hi")
+        self.menu = tk.Menu(self.tree_frame, tearoff=0)
+        self.menu.add_command(label="Do something", command=self.on_right_click)
+        submenu = tk.Menu(self.menu, tearoff=0)
+        submenu.add_command(label="Submenu item1", command=self.on_submenu_click)
+        submenu.add_command(label="Submenu item2", command=self.on_submenu_click)
+        submenu.add_command(label="Submenu item3", command=self.on_submenu_click)
+        submenu.add_command(label="Submenu item4", command=self.on_submenu_click)
+        submenu.add_command(label="Submenu item5", command=self.on_submenu_click)
+        self.menu.add_cascade(label="Submenu", menu=submenu)
+    
+        self.tree.bind("<Button-3>",self.on_right_click)
 
 
 
