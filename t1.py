@@ -37,6 +37,7 @@ class TreeData:
         self.tree_frame = tk.Frame(root)
         self.tree_frame.pack()
 
+        self.menu_open=False
 
         # Create a Treeview widget
         self.tree = ttk.Treeview(self.tree_frame, columns=("#1", "#2","#3","#4"), height=30)
@@ -81,7 +82,14 @@ class TreeData:
 
     def selectItem(self,event):
         curItem = self.tree.item(self.tree.focus())
+        item = self.tree.identify_row(event.y)
+        if item:
+            print("Right-clicked on item:", item)
+
+
+
         col = self.tree.identify_column(event.x)
+        print("selection",self.tree.selection())
         row = self.tree.selection()[0]
         
         print ('curItem = ', curItem)
@@ -99,7 +107,10 @@ class TreeData:
         
         print ('cell_value = ', cell_value)
         print('row =',row,col)
-        self.show_menu()
+        #self.show_menu()
+        
+        
+        
         # Change the value of a specific cell
         #self.tree.set ("I003", "#3", "Ramin")
         #self.tree.set("I002", 0, "EHSAN")
@@ -109,8 +120,16 @@ class TreeData:
     def on_right_click(self,event):
         print("alyk")
         item = self.tree.identify_row(event.y)
+        print("Clicked on item:", item)
         if item:
-            self.menu.post(event.x_root, event.y_root)
+            if(not self.menu_open):
+                print("open")
+                self.menu.post(event.x_root, event.y_root)
+                self.menu_open = True
+            else:
+                print("close")
+                self.menu.unpost()
+                self.menu_open = False
 
     def on_submenu_click(self):
         print("Submenu item clicked")
@@ -131,7 +150,7 @@ class TreeData:
     
         self.tree.bind("<Button-3>",self.on_right_click)
 
-
+        #self.tree.bind("<Button-3>", lambda event:self.menu.post(event.x_root, event.y_root))
 
 
 if __name__=="__main__":
